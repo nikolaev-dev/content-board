@@ -1,6 +1,15 @@
 <!-- src/lib/Board.svelte -->
 <script lang="ts">
-  export let columns: Array<{ id: string, title: string, cards: Array<string> }> = [];
+  import Card from './Card.svelte';
+
+  export let columns: Array<{ id: string, title: string, cards: Array<{ id: string, title: string, description: string }> }> = [];
+
+  function deleteCard(columnId: string, cardId: string) {
+    const column = columns.find(c => c.id === columnId);
+    if (column) {
+      column.cards = column.cards.filter(card => card.id !== cardId);
+    }
+  }
 </script>
 
 <div class="flex overflow-x-auto gap-4 p-4 h-[calc(100vh-80px)]">
@@ -10,10 +19,12 @@
         {column.title}
       </div>
       <div class="overflow-y-auto flex-grow">
-        {#each column.cards as card}
-          <div class="bg-white rounded-md p-3 mb-2 shadow-sm hover:shadow-md cursor-grab">
-            {card}
-          </div>
+        {#each column.cards as card (card.id)}
+          <Card
+            title={card.title}
+            description={card.description}
+            onDelete={() => deleteCard(column.id, card.id)}
+          />
         {/each}
       </div>
       <button class="mt-2 w-full py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors">
